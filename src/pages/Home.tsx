@@ -18,14 +18,48 @@ export default function Home() {
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const filters = ['Tout', 'Derniers', 'Populaire', 'Pièces'];
 
+  const fallbackProducts = [
+    {
+      id: 'demo-1',
+      name: 'Plaquettes de frein Brembo',
+      price: 25000,
+      image: 'https://images.unsplash.com/photo-1600705574514-6d9b3da71ff1?auto=format&fit=crop&q=80&w=400',
+      condition: 'NEUF',
+      vendor: { businessName: 'Auto Parts Mali' }
+    },
+    {
+      id: 'demo-2',
+      name: 'Filtre à Huile Bosch',
+      price: 8500,
+      image: 'https://images.unsplash.com/photo-1635352721868-b7eb47eb8cdd?auto=format&fit=crop&q=80&w=400',
+      condition: 'NEUF',
+      vendor: { businessName: 'Bamako Pièces' }
+    },
+    {
+      id: 'demo-3',
+      name: 'Amortisseur Avant',
+      price: 45000,
+      image: 'https://images.unsplash.com/photo-1598974534732-c75c510abac0?auto=format&fit=crop&q=80&w=400',
+      condition: 'OCCASION',
+      vendor: { businessName: 'Garage du Centre' }
+    }
+  ];
+
   useEffect(() => {
     fetch('/api/products')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('API down');
+        return res.json();
+      })
       .then(data => {
-        setFeaturedProducts(data.products?.slice(0, 4) || []);
+        setFeaturedProducts(data.products?.slice(0, 4) || fallbackProducts);
         setLoadingProducts(false);
       })
-      .catch(() => setLoadingProducts(false));
+      .catch(() => {
+        // Fallback for Netlify deployment where backend is absent
+        setFeaturedProducts(fallbackProducts);
+        setLoadingProducts(false);
+      });
   }, []);
 
   const categories = [
