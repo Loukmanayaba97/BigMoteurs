@@ -21,27 +21,47 @@ export default function Home() {
   const fallbackProducts = [
     {
       id: 'demo-1',
-      name: 'Plaquettes de frein Brembo',
-      price: 25000,
-      image: 'https://images.unsplash.com/photo-1600705574514-6d9b3da71ff1?auto=format&fit=crop&q=80&w=400',
-      condition: 'NEUF',
+      title: 'Plaquettes de frein Bosch avant',
+      price: 45000,
+      images: JSON.stringify(['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=400']),
+      state: 'NEW',
+      brand: 'BOSCH',
+      stock: 15,
+      vendorId: 'demo-vendor-1',
       vendor: { businessName: 'Auto Parts Mali' }
     },
     {
       id: 'demo-2',
-      name: 'Filtre à Huile Bosch',
-      price: 8500,
-      image: 'https://images.unsplash.com/photo-1635352721868-b7eb47eb8cdd?auto=format&fit=crop&q=80&w=400',
-      condition: 'NEUF',
+      title: 'Filtre à Huile Purflux',
+      price: 12000,
+      images: JSON.stringify(['https://images.unsplash.com/photo-1615906655593-ad0386982a0f?auto=format&fit=crop&q=80&w=400']),
+      state: 'NEW',
+      brand: 'PURFLUX',
+      stock: 30,
+      vendorId: 'demo-vendor-1',
       vendor: { businessName: 'Bamako Pièces' }
     },
     {
       id: 'demo-3',
-      name: 'Amortisseur Avant',
-      price: 45000,
-      image: 'https://images.unsplash.com/photo-1598974534732-c75c510abac0?auto=format&fit=crop&q=80&w=400',
-      condition: 'OCCASION',
+      title: 'Amortisseur Avant Toyota',
+      price: 85000,
+      images: JSON.stringify(['https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&q=80&w=400']),
+      state: 'USED',
+      brand: 'TOYOTA',
+      stock: 5,
+      vendorId: 'demo-vendor-2',
       vendor: { businessName: 'Garage du Centre' }
+    },
+    {
+      id: 'demo-4',
+      title: 'Bougie NGK BKR6E',
+      price: 3500,
+      images: JSON.stringify(['https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&q=80&w=400']),
+      state: 'NEW',
+      brand: 'NGK',
+      stock: 50,
+      vendorId: 'demo-vendor-2',
+      vendor: { businessName: 'AutoShop Bamako' }
     }
   ];
 
