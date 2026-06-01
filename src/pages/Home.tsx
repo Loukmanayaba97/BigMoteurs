@@ -13,7 +13,7 @@ export default function Home() {
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [activeFilter, setActiveFilter] = useState('Tout');
   const [activeLocation, setActiveLocation] = useState(() => {
-    return localStorage.getItem('rp_location') || 'Bamako, Mali';
+    return localStorage.getItem('rp_location') || 'Mali, Benin';
   });
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const filters = ['Tout', 'Derniers', 'Populaire', 'Pièces'];
@@ -137,17 +137,17 @@ export default function Home() {
                   </div>
                   <button
                     onClick={() => {
-                      setActiveLocation('Bamako, Mali');
-                      localStorage.setItem('rp_location', 'Bamako, Mali');
+                      setActiveLocation('Mali, Benin');
+                      localStorage.setItem('rp_location', 'Mali, Benin');
                       setShowLocationDropdown(false);
                     }}
                     className={cn(
                       "w-full text-left px-4 py-2 text-sm flex items-center justify-between hover:bg-gray-50 transition-colors",
-                      activeLocation === 'Bamako, Mali' ? "font-semibold text-[#B91C1C] bg-red-50/50" : "text-gray-700"
+                      activeLocation === 'Mali, Benin' ? "font-semibold text-[#B91C1C] bg-red-50/50" : "text-gray-700"
                     )}
                   >
-                    <span className="flex items-center gap-2">🇲🇱 Bamako, Mali</span>
-                    {activeLocation === 'Bamako, Mali' && <span className="w-1.5 h-1.5 rounded-full bg-[#B91C1C]"></span>}
+                    <span className="flex items-center gap-2">🇲🇱 Mali, Benin</span>
+                    {activeLocation === 'Mali, Benin' && <span className="w-1.5 h-1.5 rounded-full bg-[#B91C1C]"></span>}
                   </button>
                   <button
                     onClick={() => {

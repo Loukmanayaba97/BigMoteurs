@@ -13,7 +13,7 @@ export default function Profile() {
   // Addresses local storage state
   const [addresses, setAddresses] = useState<string[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem('rp_addresses') || '["Maison (Bamako)", "Bureau (Cotonou)"]');
+      return JSON.parse(localStorage.getItem('rp_addresses') || '["Maison (Mali)", "Bureau (Cotonou)"]');
     } catch {
       return [];
     }

@@ -13,7 +13,7 @@ export default function Checkout() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
 
-  const selectedLocation = localStorage.getItem('rp_location') || 'Bamako, Mali';
+  const selectedLocation = localStorage.getItem('rp_location') || 'Mali, Benin';
   const isMali = selectedLocation.includes('Mali');
 
   // Redirection if empty or not logged in
@@ -173,7 +173,7 @@ export default function Checkout() {
             {isMali ? (
               <>
                 <p className="text-sm text-gray-600 mt-1">Zone Industrielle, Rue 14</p>
-                <p className="text-sm text-gray-600">Bamako, Mali</p>
+                <p className="text-sm text-gray-600">Mali, Benin</p>
               </>
             ) : (
               <>
@@ -333,7 +333,7 @@ export default function Checkout() {
                       <div>
                         <span className="font-bold text-[#0B1C2E] block">Boutique Principale RapidPièces</span>
                         {isMali ? (
-                          <span className="text-gray-500">Quartier du Fleuve, Avenue Modibo Keïta<br/>Bamako, Mali</span>
+                          <span className="text-gray-500">Quartier du Fleuve, Avenue Modibo Keïta<br/>Mali, Benin</span>
                         ) : (
                           <span className="text-gray-500">Gbégamey, Place Bulgarie<br/>Cotonou, Bénin</span>
                         )}
