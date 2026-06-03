@@ -3,6 +3,45 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Star, ShieldCheck, Truck } from 'lucide-react';
 import { useCartStore } from '../store/cart';
 
+const FALLBACK_PRODUCTS: Record<string, any> = {
+  'demo-1': {
+    id: 'demo-1', title: 'Plaquettes de frein Bosch avant', price: 45000,
+    images: JSON.stringify(['/images/brake_pads_1780235558702.png']),
+    state: 'NEW', brand: 'BOSCH', stock: 15, vendorId: 'demo-vendor-1',
+    vendor: { shopName: 'Auto Parts Mali' }
+  },
+  'demo-2': {
+    id: 'demo-2', title: 'Filtre à Huile Purflux', price: 12000,
+    images: JSON.stringify(['/images/oil_filter_1780235628194.png']),
+    state: 'NEW', brand: 'PURFLUX', stock: 30, vendorId: 'demo-vendor-1',
+    vendor: { shopName: 'BigMoteurs Store' }
+  },
+  'demo-3': {
+    id: 'demo-3', title: 'Amortisseur Avant Toyota', price: 85000,
+    images: JSON.stringify(['/images/shock_absorber_1780235541576.png']),
+    state: 'USED', brand: 'TOYOTA', stock: 5, vendorId: 'demo-vendor-2',
+    vendor: { shopName: 'Garage du Centre' }
+  },
+  'demo-4': {
+    id: 'demo-4', title: 'Bougie NGK BKR6E', price: 3500,
+    images: JSON.stringify(['/images/led_headlight_1780235575069.png']),
+    state: 'NEW', brand: 'NGK', stock: 50, vendorId: 'demo-vendor-2',
+    vendor: { shopName: 'AutoShop Bénin' }
+  },
+  'demo-5': {
+    id: 'demo-5', title: 'Courroie de distribution Gates', price: 28000,
+    images: JSON.stringify(['/images/car_engine_bay_1780234773130.png']),
+    state: 'NEW', brand: 'GATES', stock: 20, vendorId: 'demo-vendor-1',
+    vendor: { shopName: 'Auto Parts Mali' }
+  },
+  'demo-6': {
+    id: 'demo-6', title: 'Kit embrayage Valeo', price: 120000,
+    images: JSON.stringify(['/images/car_parts_composition_1780234792189.png']),
+    state: 'NEW', brand: 'VALEO', stock: 8, vendorId: 'demo-vendor-2',
+    vendor: { shopName: 'Garage du Centre' }
+  },
+};
+
 export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -11,10 +50,22 @@ export default function ProductDetails() {
   const addItem = useCartStore((state) => state.addItem);
 
   useEffect(() => {
+    if (id && FALLBACK_PRODUCTS[id]) {
+      setProduct(FALLBACK_PRODUCTS[id]);
+      setLoading(false);
+      return;
+    }
     fetch(`/api/products/${id}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('API indisponible');
+        return res.json();
+      })
       .then(data => {
-        setProduct(data.product);
+        setProduct(data.product || (id ? FALLBACK_PRODUCTS[id] : null));
+        setLoading(false);
+      })
+      .catch(() => {
+        setProduct(id ? FALLBACK_PRODUCTS[id] || null : null);
         setLoading(false);
       });
   }, [id]);
@@ -31,7 +82,7 @@ export default function ProductDetails() {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center">
          <h2 className="text-xl font-bold text-[#0B1C2E] mb-2">Produit introuvable</h2>
-         <button onClick={() => navigate(-1)} className="text-[#B91C1C] font-medium">Retour</button>
+         <button type="button" onClick={() => navigate(-1)} className="text-[#B91C1C] font-medium">Retour</button>
       </div>
     );
   }
@@ -70,8 +121,10 @@ export default function ProductDetails() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="relative h-72 bg-white">
-        <button 
-          onClick={handleBack} 
+        <button
+          type="button"
+          aria-label="Retour"
+          onClick={handleBack}
           className="absolute top-10 left-4 z-10 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-colors"
         >
           <ArrowLeft className="w-5 h-5 text-[#0B1C2E]" />
@@ -149,7 +202,8 @@ export default function ProductDetails() {
             {product.price.toLocaleString()} <span className="text-sm font-bold">FCFA</span>
           </div>
         </div>
-        <button 
+        <button
+          type="button"
           onClick={handleAddToCart}
           className="bg-[#0B1C2E] text-white px-8 py-3.5 rounded-full font-bold shadow-lg shadow-[#0B1C2E]/20 flex items-center gap-2 hover:bg-[#162e49] transition-colors"
         >
