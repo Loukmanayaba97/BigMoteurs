@@ -13,8 +13,8 @@ export default defineConfig(() => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'icon.svg'],
         manifest: {
-          name: 'RapidPieces',
-          short_name: 'RapidPieces',
+          name: 'BigMoteurs',
+          short_name: 'BigMoteurs',
           description: 'Achetez et vendez vos pièces détachées au Mali.',
           theme_color: '#181a20',
           background_color: '#f9fafb',

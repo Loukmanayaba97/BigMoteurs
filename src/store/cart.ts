@@ -53,7 +53,7 @@ export const useCartStore = create<CartState>()(
       },
     }),
     {
-      name: 'rapidpieces-cart',
+      name: 'bigmoteurs-cart',
     }
   )
 );

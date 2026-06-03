@@ -25,7 +25,7 @@ export const useAuthStore = create<AuthState>()(
       logout: () => set({ user: null, token: null }),
     }),
     {
-      name: 'rapidpieces-auth',
+      name: 'bigmoteurs-auth',
     }
   )
 );

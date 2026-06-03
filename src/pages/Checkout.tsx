@@ -64,7 +64,7 @@ export default function Checkout() {
 
       // 3. Simuler l'envoi d'un mail à l'administrateur
       console.log("=== SIMULATION ENVOI EMAIL COMMANDE (NODEMAILER) ===");
-      console.log("To: admin@rapidpieces.ci");
+      console.log("To: admin@bigmoteurs.ci");
       console.log(`Subject: 🛒 Nouvelle commande confirmée - #${order.id || 'ORDER'} `);
       console.log("Body:");
       console.log(`Un client a passé une nouvelle commande.`);
@@ -90,7 +90,7 @@ export default function Checkout() {
     const doc = new jsPDF();
     doc.setFont("helvetica", "bold");
     doc.setFontSize(22);
-    doc.text("Reçu de Commande - RapidPièces", 20, 20);
+    doc.text("Reçu de Commande - BigMoteurs", 20, 20);
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
@@ -115,7 +115,7 @@ export default function Checkout() {
     doc.setFontSize(16);
     doc.text(`Total : ${(getTotal() + 2500).toLocaleString()} FCFA`, 20, y);
 
-    doc.save("recu_commande_rapidpieces.pdf");
+    doc.save("recu_commande_bigmoteurs.pdf");
   };
 
   const handleFinish = () => {
@@ -312,7 +312,7 @@ export default function Checkout() {
                   </p>
                   <div className="bg-white p-3 rounded-lg border border-blue-100 space-y-2 text-xs">
                     <div className="flex justify-between"><span className="text-gray-500">Banque:</span><span className="font-bold text-[#0B1C2E]">{isMali ? 'BDM (Banque de Développement du Mali)' : 'BOA Bénin (Bank of Africa)'}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">Titulaire:</span><span className="font-bold text-[#0B1C2E]">RapidPièces SARL</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">Titulaire:</span><span className="font-bold text-[#0B1C2E]">BigMoteurs SARL</span></div>
                     <div className="flex justify-between"><span className="text-gray-500">IBAN/RIB:</span><span className="font-bold text-[#0B1C2E] font-mono">{isMali ? 'ML09 6012 3456 7890 1234 56' : 'BJ06 2013 4567 8901 2345 67'}</span></div>
                     <div className="flex justify-between"><span className="text-gray-500">BIC/SWIFT:</span><span className="font-bold text-[#0B1C2E] font-mono">{isMali ? 'BDMAMLM1' : 'BOABJBJ1'}</span></div>
                   </div>
@@ -331,7 +331,7 @@ export default function Checkout() {
                     <div className="flex items-start gap-2">
                       <Store className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold text-[#0B1C2E] block">Boutique Principale RapidPièces</span>
+                        <span className="font-bold text-[#0B1C2E] block">Boutique Principale BigMoteurs</span>
                         {isMali ? (
                           <span className="text-gray-500">Quartier du Fleuve, Avenue Modibo Keïta<br/>Mali, Benin</span>
                         ) : (

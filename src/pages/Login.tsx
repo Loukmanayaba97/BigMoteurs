@@ -13,7 +13,7 @@ export default function Login() {
 
   const handleDemoLogin = () => {
     setAuth(
-      { id: 'demo123', name: 'Utilisateur Démo', email: 'demo@rapidpieces.ci', role: 'CLIENT', kycStatus: 'APPROVED' }, 
+      { id: 'demo123', name: 'Utilisateur Démo', email: 'demo@bigmoteurs.ci', role: 'CLIENT', kycStatus: 'APPROVED' }, 
       'demo-token'
     );
     navigate('/');
@@ -53,9 +53,7 @@ export default function Login() {
       </button>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md mt-6">
-        <h1 className="text-center text-4xl font-extrabold italic tracking-tight text-[#0B1C2E]">
-          Rapid<span className="text-[#B91C1C]">Pieces</span>
-        </h1>
+        <img src="/logo1.png" alt="BigMoteurs Logo" className="h-16 w-auto mx-auto object-contain" />
         <h2 className="mt-6 text-center text-2xl font-semibold leading-9 tracking-tight text-gray-900">
           Connexion à votre compte
         </h2>
@@ -149,7 +147,7 @@ export default function Login() {
                <button
                  onClick={() => {
                    setAuth(
-                     { id: 'vendor123', name: 'Boutique Auto', email: 'vendor@rapidpieces.ci', role: 'VENDOR', kycStatus: 'APPROVED' }, 
+                     { id: 'vendor123', name: 'Boutique Auto', email: 'vendor@bigmoteurs.ci', role: 'VENDOR', kycStatus: 'APPROVED' }, 
                      'demo-vendor-token'
                    );
                    navigate('/');
@@ -162,7 +160,7 @@ export default function Login() {
                <button
                  onClick={() => {
                    setAuth(
-                     { id: 'admin123', name: 'Super Admin', email: 'admin@rapidpieces.ci', role: 'ADMIN', kycStatus: 'APPROVED' }, 
+                     { id: 'admin123', name: 'Super Admin', email: 'admin@bigmoteurs.ci', role: 'ADMIN', kycStatus: 'APPROVED' }, 
                      'demo-admin-token'
                    );
                    navigate('/admin');

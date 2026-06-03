@@ -97,7 +97,7 @@ export default function RequestPart() {
       <div className="px-6 mt-6">
         <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
           <p className="text-sm text-blue-800">
-            Remplissez ce formulaire avec un maximum de détails. Un expert RapidPièces se chargera de sourcer votre pièce.
+            Remplissez ce formulaire avec un maximum de détails. Un expert BigMoteurs se chargera de sourcer votre pièce.
           </p>
         </div>
 

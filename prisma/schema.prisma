@@ -43,6 +43,7 @@ model Product {
   vendor      Vendor   @relation(fields: [vendorId], references: [id])
   title       String
   oemRef      String?
+  vin         String   @default("") // Numéro de châssis
   category    String
   brand       String
   model       String?

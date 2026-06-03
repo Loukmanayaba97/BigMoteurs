@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
@@ -21,8 +21,26 @@ import RequestPart from './pages/RequestPart';
 import MyRequests from './pages/MyRequests';
 import './index.css';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+function RootApp() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-50">
+        <img src="/logo.png" alt="BigMoteurs Logo" className="w-48 mb-6 animate-pulse" />
+        <div className="mt-8 w-10 h-10 border-4 border-gray-100 border-t-[#B91C1C] rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -49,5 +67,11 @@ createRoot(document.getElementById('root')!).render(
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+  );
+}
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <RootApp />
   </StrictMode>,
 );

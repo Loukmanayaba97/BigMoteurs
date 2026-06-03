@@ -110,6 +110,11 @@ export default function ProductDetails() {
               OEM: {product.oemRef}
             </span>
           )}
+          {product.vin && (
+            <span className="text-xs text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-md font-mono font-bold">
+              Châssis: {product.vin}
+            </span>
+          )}
         </div>
 
         <div className="space-y-4">

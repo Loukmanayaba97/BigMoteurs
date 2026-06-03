@@ -44,9 +44,7 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center px-6 py-12">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-center text-4xl font-extrabold italic tracking-tight text-[#0B1C2E]">
-          Rapid<span className="text-[#B91C1C]">Pieces</span>
-        </h1>
+        <img src="/logo1.png" alt="BigMoteurs Logo" className="h-16 w-auto mx-auto object-contain" />
         <h2 className="mt-6 text-center text-2xl font-semibold leading-9 tracking-tight text-gray-900">
           Créer un compte
         </h2>

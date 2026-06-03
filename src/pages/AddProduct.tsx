@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Save, Upload, Check } from 'lucide-react';
+import { ArrowLeft, Save, Upload, Check, Camera } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
 
@@ -33,6 +33,8 @@ export default function AddProduct() {
   const [selectedImage, setSelectedImage] = useState(PRESET_IMAGES[0].url);
   const [customImageUrl, setCustomImageUrl] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [vin, setVin] = useState('');
+  const [scanning, setScanning] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -41,6 +43,15 @@ export default function AddProduct() {
       setErrorMsg("Seuls les comptes vendeurs peuvent ajouter des produits.");
     }
   }, [user, navigate]);
+
+  const handleScan = () => {
+    setScanning(true);
+    setTimeout(() => {
+      const mockVin = 'VF33HZYB9' + Math.floor(10000000 + Math.random() * 90000000).toString();
+      setVin(mockVin);
+      setScanning(false);
+    }, 1500);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,6 +82,7 @@ export default function AddProduct() {
           title,
           brand,
           model,
+          vin,
           year: year ? parseInt(year) : null,
           oemRef: oemRef || null,
           category,
@@ -221,6 +233,36 @@ export default function AddProduct() {
                   placeholder="Ex: 04465-42200" 
                 />
               </div>
+            </div>
+
+            {/* VIN Field */}
+            <div>
+              <label className="block text-xs font-bold text-gray-600 mb-1.5">Numéro Châssis (VIN)</label>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  name="vin"
+                  value={vin}
+                  onChange={(e) => setVin(e.target.value.toUpperCase())}
+                  maxLength={17}
+                  required
+                  className="flex-1 bg-gray-50 border border-gray-200 text-[#0B1C2E] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#0B1C2E] transition-colors font-mono"
+                  placeholder="17 caractères (Obligatoire)" 
+                />
+                <button 
+                  type="button"
+                  onClick={handleScan}
+                  disabled={scanning}
+                  className="bg-[#0B1C2E] text-white p-3 rounded-xl shadow-sm active:scale-95 disabled:opacity-50 flex items-center justify-center min-w-[50px]"
+                >
+                  {scanning ? (
+                    <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    <Camera className="w-6 h-6" />
+                  )}
+                </button>
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1 italic">Le VIN est obligatoire pour garantir la compatibilité des pièces.</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
