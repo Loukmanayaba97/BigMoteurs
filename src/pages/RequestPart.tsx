@@ -4,25 +4,61 @@ import { useNavigate } from 'react-router-dom';
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
 
+function compressImage(file: File, maxWidth = 1280): Promise<{ base64: string; mimeType: string }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxWidth / img.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      resolve({ base64: dataUrl.split(',')[1], mimeType: 'image/jpeg' });
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
 async function extractVinFromImage(base64Image: string, mimeType: string): Promise<string> {
-  if (!GEMINI_API_KEY) throw new Error('Clé API Gemini non configurée');
+  if (!GEMINI_API_KEY) throw new Error('NO_KEY');
+  const prompt = [
+    'You are an expert at reading Vehicle Identification Numbers (VIN) from photos.',
+    'Look carefully at this image and find the VIN number.',
+    'The VIN appears on: a metal plate on the dashboard (visible through the windshield),',
+    'a sticker on the door jamb, a metal plate in the engine bay, or the registration document.',
+    'A VIN is EXACTLY 17 characters: digits 0-9 and uppercase letters A-Z EXCEPT the letters I, O, and Q.',
+    'Read each character very carefully — confusing 0 (zero) with O, or 1 (one) with I is a common mistake.',
+    'Reply with ONLY the 17-character VIN. No spaces, no dashes, no explanation.',
+    'If you cannot find a VIN in the image, reply exactly: NOT_FOUND',
+  ].join(' ');
+
   const body = {
     contents: [{
       parts: [
-        { text: 'Extract the VIN (Vehicle Identification Number) from this image. A VIN is exactly 17 characters (letters and numbers, no I/O/Q). Return ONLY the 17-character VIN, nothing else. If no VIN is visible, return "NOT_FOUND".' },
+        { text: prompt },
         { inline_data: { mime_type: mimeType, data: base64Image } }
       ]
-    }]
+    }],
+    generationConfig: { temperature: 0, maxOutputTokens: 32 }
   };
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
     { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
   );
-  if (!res.ok) throw new Error('Erreur Gemini API');
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error?.message || 'Erreur Gemini API');
+  }
   const data = await res.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? 'NOT_FOUND';
-  const match = text.match(/[A-HJ-NPR-Z0-9]{17}/i);
-  return match ? match[0].toUpperCase() : 'NOT_FOUND';
+  const text = (data.candidates?.[0]?.content?.parts?.[0]?.text ?? '').trim().toUpperCase().replace(/\s/g, '');
+  if (text === 'NOT_FOUND' || text.length === 0) return 'NOT_FOUND';
+  const match = text.match(/[A-HJ-NPR-Z0-9]{17}/);
+  return match ? match[0] : 'NOT_FOUND';
 }
 
 interface VehicleInfo {
@@ -83,6 +119,9 @@ export default function RequestPart() {
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo | null>(null);
   const [vehicleLoading, setVehicleLoading] = useState(false);
 
+  // Confirmation overlay after scan
+  const [scanResult, setScanResult] = useState<{ vin: string; photoUrl: string } | null>(null);
+
   const [partPhotoUrl, setPartPhotoUrl] = useState<string | null>(null);
   const [partPhotoName, setPartPhotoName] = useState<string | null>(null);
 
@@ -107,27 +146,37 @@ export default function RequestPart() {
     setVinScanLoading(true);
     setVinScanError('');
     try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result as string;
-          resolve(result.split(',')[1]);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      const extracted = await extractVinFromImage(base64, file.type);
+      const { base64, mimeType } = await compressImage(file);
+      const photoUrl = `data:${mimeType};base64,${base64}`;
+
+      if (!GEMINI_API_KEY) {
+        setVinScanError('Scanner IA non disponible. Ajoutez VITE_GEMINI_API_KEY dans les variables Netlify.');
+        return;
+      }
+
+      const extracted = await extractVinFromImage(base64, mimeType);
       if (extracted === 'NOT_FOUND') {
-        setVinScanError('Numéro de châssis non détecté. Saisissez-le manuellement.');
+        setVinScanError('Code non détecté sur la photo. Assurez-vous que la plaque VIN est bien visible et réessayez.');
       } else {
-        await handleVinChange(extracted);
+        // Show confirmation overlay instead of auto-filling
+        setScanResult({ vin: extracted, photoUrl });
       }
     } catch (err: any) {
-      setVinScanError(err.message || 'Erreur lors de la détection. Saisissez le VIN manuellement.');
+      if (err.message === 'NO_KEY') {
+        setVinScanError('Scanner IA non disponible. Ajoutez VITE_GEMINI_API_KEY dans les variables Netlify.');
+      } else {
+        setVinScanError('Erreur lors de l\'analyse. Vérifiez votre connexion et réessayez.');
+      }
     } finally {
       setVinScanLoading(false);
       if (vinScanInputRef.current) vinScanInputRef.current.value = '';
     }
+  };
+
+  const confirmScannedVin = async () => {
+    if (!scanResult) return;
+    setScanResult(null);
+    await handleVinChange(scanResult.vin);
   };
 
   const handlePartPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,6 +252,73 @@ export default function RequestPart() {
   }
 
   const vinValid = vin.length === 17;
+
+  // ── VIN scan confirmation overlay ──────────────────────────────────────────
+  if (scanResult) {
+    return (
+      <div className="fixed inset-0 z-50 bg-[#0B1C2E] flex flex-col">
+        {/* Photo preview */}
+        <div className="flex-1 relative overflow-hidden">
+          <img
+            src={scanResult.photoUrl}
+            alt="Photo scannée"
+            className="w-full h-full object-contain"
+          />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0B1C2E] to-transparent" />
+        </div>
+
+        {/* Result panel */}
+        <div className="bg-[#0B1C2E] px-6 pt-4 pb-10 flex flex-col items-center gap-5">
+          <div className="flex items-center gap-2 text-emerald-400">
+            <CheckCircle className="w-5 h-5" />
+            <span className="text-sm font-bold uppercase tracking-wider">Code VIN détecté</span>
+          </div>
+
+          {/* VIN displayed character by character */}
+          <div className="flex flex-wrap justify-center gap-1.5">
+            {scanResult.vin.split('').map((char, i) => (
+              <span
+                key={i}
+                className="w-8 h-10 bg-white/10 border border-white/20 rounded-lg flex items-center justify-center text-white font-mono font-bold text-lg"
+              >
+                {char}
+              </span>
+            ))}
+          </div>
+
+          <p className="text-white/50 text-xs text-center">
+            Vérifiez que ce code correspond bien à la plaque de votre véhicule
+          </p>
+
+          <button
+            type="button"
+            onClick={confirmScannedVin}
+            className="w-full bg-emerald-500 hover:bg-emerald-400 text-white py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-colors"
+          >
+            <CheckCircle className="w-5 h-5" />
+            Oui, utiliser ce code
+          </button>
+
+          <button
+            type="button"
+            onClick={() => { setScanResult(null); vinScanInputRef.current?.click(); }}
+            className="w-full bg-white/10 hover:bg-white/20 text-white py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-colors"
+          >
+            <ScanLine className="w-4 h-4" />
+            Reprendre une autre photo
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setScanResult(null)}
+            className="text-white/40 text-sm underline"
+          >
+            Saisir manuellement
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
